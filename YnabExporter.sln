@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YnabExporter", "YnabExporter\YnabExporter.csproj", "{4CBB5D7A-9541-4481-9F5D-004134E45B64}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IsraeliFinancialImporter", "..\israeli-financial-importer\IsraeliFinancialImporter\IsraeliFinancialImporter.csproj", "{D788351E-CC1C-404B-BC11-FA70F9B61116}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IsraeliFinancialImporter.Tests", "..\israeli-financial-importer\IsraeliFinancialImporter.Tests\IsraeliFinancialImporter.Tests.csproj", "{0487F3D4-A588-481F-BECF-1DBF514CB4D1}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{4CBB5D7A-9541-4481-9F5D-004134E45B64}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4CBB5D7A-9541-4481-9F5D-004134E45B64}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4CBB5D7A-9541-4481-9F5D-004134E45B64}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4CBB5D7A-9541-4481-9F5D-004134E45B64}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D788351E-CC1C-404B-BC11-FA70F9B61116}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D788351E-CC1C-404B-BC11-FA70F9B61116}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D788351E-CC1C-404B-BC11-FA70F9B61116}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D788351E-CC1C-404B-BC11-FA70F9B61116}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0487F3D4-A588-481F-BECF-1DBF514CB4D1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0487F3D4-A588-481F-BECF-1DBF514CB4D1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0487F3D4-A588-481F-BECF-1DBF514CB4D1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0487F3D4-A588-481F-BECF-1DBF514CB4D1}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net5.0</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\israeli-financial-importer\IsraeliFinancialImporter\IsraeliFinancialImporter.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="WebDriverManager" Version="2.11.3" />
+      <PackageReference Include="YNAB.SDK" Version="1.2.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Update="appsettings.json">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
+
+</Project>
