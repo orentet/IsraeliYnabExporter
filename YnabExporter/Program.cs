@@ -6,8 +6,7 @@ using IsraeliFinancialImporter.Importers;
 using Microsoft.Extensions.Configuration;
 using WebDriverManager;
 using WebDriverManager.DriverConfigs.Impl;
-using YNAB.SDK;
-using YNAB.SDK.Model;
+using YNAB.Rest;
 
 namespace YnabExporter
 {
@@ -23,24 +22,28 @@ namespace YnabExporter
             var config = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json", false, false).Build();
 
-            Parallel.ForEach(config.GetSection("ImportAccounts").GetChildren(), importAccount =>
+            var ynabApi = ApiClientFactory.Create(config.GetValue<string>("YnabAccessToken"));
+            var budgetId = config.GetValue<string>("YnabBudget");
+
+            Parallel.ForEach(config.GetSection("ImportAccounts").GetChildren(), async importAccount =>
             {
                 using var importer = GetImporterByType(importAccount);
                 var importedTransactions = importer.Import(FromInclusive, ToInclusive).ToList();
-                var saveTransactions = importedTransactions.Select(transaction => new SaveTransaction(
-                        importAccount.GetValue<Guid>("YnabAccount"),
-                        transaction.OccuredAt,
-                        GetMilliUnitAmount(transaction.Amount),
-                        payeeName: transaction.Payee,
-                        memo: transaction.Memo,
-                        importId: $"{transaction.AccountId}::{transaction.Id}"))
+                var ynabTransactions = importedTransactions.Select(transaction => new Transaction
+                    {
+                        AccountId = importAccount.GetValue<string>("YnabAccount"),
+                        Date = transaction.OccuredAt,
+                        Amount = GetMilliUnitAmount(transaction.Amount),
+                        PayeeName = transaction.Payee,
+                        Memo = transaction.Memo,
+                        ImportId = $"{transaction.AccountId}::{transaction.Id}"
+                    })
                     .ToList();
 
                 Console.WriteLine(
-                    $"{importAccount.GetValue<string>("ImporterType")}: sending {saveTransactions.Count} transactions to YNAB");
-                var ynabApi = new API(config.GetValue<string>("YnabAccessToken"));
-                ynabApi.Transactions.CreateTransaction(config.GetValue<string>("YnabBudget"),
-                    new SaveTransactionsWrapper(transactions: saveTransactions));
+                    $"{importAccount.GetValue<string>("ImporterType")}: sending {ynabTransactions.Count} transactions to YNAB");
+                await ynabApi.PostBulkTransactions(budgetId,
+                    new PostBulkTransactions { Transactions = ynabTransactions });
             });
         }
 
@@ -63,9 +66,9 @@ namespace YnabExporter
             }
         }
 
-        private static long GetMilliUnitAmount(decimal amount)
+        private static int GetMilliUnitAmount(decimal amount)
         {
-            return Convert.ToInt64(decimal.Truncate(amount * 1000));
+            return Convert.ToInt32(decimal.Truncate(amount * 1000));
         }
     }
 }
