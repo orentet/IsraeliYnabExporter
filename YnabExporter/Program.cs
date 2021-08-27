@@ -7,6 +7,7 @@ using Microsoft.Extensions.Configuration;
 using WebDriverManager;
 using WebDriverManager.DriverConfigs.Impl;
 using YNAB.Rest;
+using YnabExporter.Utils;
 
 namespace YnabExporter
 {
@@ -27,23 +28,26 @@ namespace YnabExporter
 
             Parallel.ForEach(config.GetSection("ImportAccounts").GetChildren(), async importAccount =>
             {
-                using var importer = GetImporterByType(importAccount);
-                var importedTransactions = importer.Import(FromInclusive, ToInclusive).ToList();
-                var ynabTransactions = importedTransactions.Select(transaction => new Transaction
-                    {
-                        AccountId = importAccount.GetValue<string>("YnabAccount"),
-                        Date = transaction.OccuredAt,
-                        Amount = GetMilliUnitAmount(transaction.Amount),
-                        PayeeName = transaction.Payee,
-                        Memo = transaction.Memo,
-                        ImportId = $"{transaction.AccountId}::{transaction.Id}"
-                    })
-                    .ToList();
+                await Retry.Do(async () =>
+                {
+                    using var importer = GetImporterByType(importAccount);
+                    var importedTransactions = importer.Import(FromInclusive, ToInclusive).ToList();
+                    var ynabTransactions = importedTransactions.Select(transaction => new Transaction
+                        {
+                            AccountId = importAccount.GetValue<string>("YnabAccount"),
+                            Date = transaction.OccuredAt,
+                            Amount = GetMilliUnitAmount(transaction.Amount),
+                            PayeeName = transaction.Payee,
+                            Memo = transaction.Memo,
+                            ImportId = $"{transaction.AccountId}::{transaction.Id}"
+                        })
+                        .ToList();
 
-                Console.WriteLine(
-                    $"{importAccount.GetValue<string>("ImporterType")}: sending {ynabTransactions.Count} transactions to YNAB");
-                await ynabApi.PostBulkTransactions(budgetId,
-                    new PostBulkTransactions { Transactions = ynabTransactions });
+                    Console.WriteLine(
+                        $"{importAccount.GetValue<string>("ImporterType")}: sending {ynabTransactions.Count} transactions to YNAB");
+                    await ynabApi.PostBulkTransactions(budgetId,
+                        new PostBulkTransactions { Transactions = ynabTransactions });
+                }, TimeSpan.FromSeconds(30), 10);
             });
         }
 
